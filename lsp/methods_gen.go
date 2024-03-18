@@ -51,6 +51,7 @@ type Methods struct {
 	onColorPresentation                        func(ctx context.Context, req *defines.ColorPresentationParams) (*[]defines.ColorPresentation, error)
 	onFoldingRanges                            func(ctx context.Context, req *defines.FoldingRangeParams) (*[]defines.FoldingRange, error)
 	onSelectionRanges                          func(ctx context.Context, req *defines.SelectionRangeParams) (*[]defines.SelectionRange, error)
+	onDocumentDiagnostic                       func(ctx context.Context, req *defines.DocumentDiagnosticParams) (*[]defines.DocumentDiagnosticReport, error)
 }
 
 func (m *Methods) OnInitialize(f func(ctx context.Context, req *defines.InitializeParams) (result *defines.InitializeResult, err *defines.InitializeError)) {
@@ -1160,6 +1161,33 @@ func (m *Methods) selectionRangesMethodInfo() *jsonrpc.MethodInfo {
 	}
 }
 
+func (m *Methods) OnDocumentDiagnostic(f func(ctx context.Context, req *defines.DocumentDiagnosticParams) (result *[]defines.DocumentDiagnosticReport, err error)) {
+	m.onDocumentDiagnostic = f
+}
+
+func (m *Methods) documentDiagnostic(ctx context.Context, req interface{}) (interface{}, error) {
+	params := req.(*defines.DocumentDiagnosticParams)
+	if m.onDocumentDiagnostic != nil {
+		res, err := m.onDocumentDiagnostic(ctx, params)
+		e := wrapErrorToRespError(err, 0)
+		return res, e
+	}
+	return nil, nil
+}
+
+func (m *Methods) documentDiagnosticMethodInfo() *jsonrpc.MethodInfo {
+	if m.onDocumentDiagnostic == nil {
+		return nil
+	}
+	return &jsonrpc.MethodInfo{
+		Name: "textDocument/diagnostic",
+		NewRequest: func() interface{} {
+			return &defines.DocumentDiagnosticParams{}
+		},
+		Handler: m.documentDiagnostic,
+	}
+}
+
 func (m *Methods) GetMethods() []*jsonrpc.MethodInfo {
 	return []*jsonrpc.MethodInfo{
 		m.initializeMethodInfo(),
@@ -1203,5 +1231,6 @@ func (m *Methods) GetMethods() []*jsonrpc.MethodInfo {
 		m.colorPresentationMethodInfo(),
 		m.foldingRangesMethodInfo(),
 		m.selectionRangesMethodInfo(),
+		m.documentDiagnosticMethodInfo(),
 	}
 }

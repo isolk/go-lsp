@@ -2744,3 +2744,49 @@ const (
 	PositionEncodingKind_UTF16 = "utf-16"
 	PositionEncodingKind_UTF32 = "utf-32"
 )
+
+type DiagnosticsCapabilities struct {
+	/**
+	 * Whether the clients accepts diagnostics with related information.
+	 */
+	// relatedInformation?: boolean;
+	RelatedInformation *bool `json:"relatedInformation,omitempty"`
+
+	/**
+	 * Client supports the tag property to provide meta data about a diagnostic.
+	 * Clients supporting tags have to handle unknown tags gracefully.
+	 *
+	 * @since 3.15.0
+	 */
+	// tagSupport?: ClientDiagnosticsTagOptions;
+	TagSupport *ClientDiagnosticsTagOptions `json:"tagSupport,omitempty"`
+
+	/**
+	 * Client supports a codeDescription property
+	 *
+	 * @since 3.16.0
+	 */
+	// codeDescriptionSupport?: boolean;
+	CodeDescriptionSupport *bool `json:"codeDescriptionSupport,omitempty"`
+
+	/**
+	 * Whether code action supports the `data` property which is
+	 * preserved between a `textDocument/publishDiagnostics` and
+	 * `textDocument/codeAction` request.
+	 *
+	 * @since 3.16.0
+	 */
+	// dataSupport?: boolean;
+	DataSupport *bool `json:"dataSupport,omitempty"`
+}
+
+/**
+ * @since 3.18.0
+ */
+type ClientDiagnosticsTagOptions struct {
+	/**
+	 * The tags supported by the client.
+	 */
+	// valueSet: DiagnosticTag[];
+	ValueSet *[]DiagnosticTag `json:"valueSet,omitempty"`
+}
