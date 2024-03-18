@@ -16,8 +16,6 @@ type InitializeParams struct {
 }
 
 type _ServerCapabilities struct {
-	PositionEncoding interface{} `json:"positionEncoding,omitempty"` // PositionEncodingKind;
-
 	// Defines how text documents are synced. Is either a detailed structure defining each notification or
 	// for backwards compatibility the TextDocumentSyncKind number.
 	TextDocumentSync interface{} `json:"textDocumentSync,omitempty"` // TextDocumentSyncOptions, TextDocumentSyncKind,
@@ -106,6 +104,13 @@ type _ServerCapabilities struct {
 	//
 	// @since 3.16.0
 	SemanticTokensProvider interface{} `json:"semanticTokensProvider,omitempty"` // SemanticTokensOptions, SemanticTokensRegistrationOptions,
+
+	PositionEncoding interface{} `json:"positionEncoding,omitempty"` // PositionEncodingKind;
+
+	// The server has support for pull model diagnostics.
+	//
+	// @since 3.17.0
+	DiagnosticProvider interface{} `json:"diagnosticProvider,omitempty"` // DiagnosticOptions, DiagnosticRegistrationOptions,
 
 	// Window specific server capabilities.
 	Workspace *struct {
