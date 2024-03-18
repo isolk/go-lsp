@@ -51,7 +51,7 @@ type Methods struct {
 	onColorPresentation                        func(ctx context.Context, req *defines.ColorPresentationParams) (*[]defines.ColorPresentation, error)
 	onFoldingRanges                            func(ctx context.Context, req *defines.FoldingRangeParams) (*[]defines.FoldingRange, error)
 	onSelectionRanges                          func(ctx context.Context, req *defines.SelectionRangeParams) (*[]defines.SelectionRange, error)
-	onDocumentDiagnostic                       func(ctx context.Context, req *defines.DocumentDiagnosticParams) (*[]defines.DocumentDiagnosticReport, error)
+	onDocumentDiagnostic                       func(ctx context.Context, req *defines.DocumentDiagnosticParams) (*defines.DocumentDiagnosticReport, error)
 }
 
 func (m *Methods) OnInitialize(f func(ctx context.Context, req *defines.InitializeParams) (result *defines.InitializeResult, err *defines.InitializeError)) {
@@ -1161,7 +1161,7 @@ func (m *Methods) selectionRangesMethodInfo() *jsonrpc.MethodInfo {
 	}
 }
 
-func (m *Methods) OnDocumentDiagnostic(f func(ctx context.Context, req *defines.DocumentDiagnosticParams) (result *[]defines.DocumentDiagnosticReport, err error)) {
+func (m *Methods) OnDocumentDiagnostic(f func(ctx context.Context, req *defines.DocumentDiagnosticParams) (result *defines.DocumentDiagnosticReport, err error)) {
 	m.onDocumentDiagnostic = f
 }
 
