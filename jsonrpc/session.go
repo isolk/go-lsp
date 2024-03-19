@@ -52,6 +52,29 @@ func (s *Session) Start() {
 	}
 }
 
+func (s *Session) SendNotification(msg NotificationMessage) {
+	s.writeLock.Lock()
+	defer s.writeLock.Unlock()
+	res, err := jsoniter.Marshal(msg)
+	if err != nil {
+		logs.Println("SendNotification error: ", err)
+		return
+	}
+	totalLen := len(res)
+	err = s.mustWrite([]byte(fmt.Sprintf("Content-Length: %d\r\n\r\n", totalLen)))
+	if err != nil {
+		logs.Println("SendNotification error: ", err)
+		return
+	}
+	err = s.mustWrite(res)
+	if err != nil {
+		logs.Println("SendNotification error: ", err)
+		return
+	}
+
+	logs.Printf("Notification: [%s], content: [%v]\n", msg.Method, string(res))
+}
+
 func (s *Session) handle() {
 	req, err := s.readRequest()
 	if err != nil {
@@ -161,7 +184,7 @@ func (s *Session) readRequest() (RequestMessage, error) {
 	return req, nil
 }
 
-func getSession(ctx context.Context) *Session {
+func GetSession(ctx context.Context) *Session {
 	val := ctx.Value(sessionKey)
 	if isNil(val) {
 		return nil
@@ -311,7 +334,6 @@ func (s *Session) handlerError(err error) {
 		s.server.removeSession(s.id)
 	}
 	logs.Println("error: ", err)
-	return
 }
 
 func isNil(i interface{}) bool {
