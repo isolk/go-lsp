@@ -18,8 +18,8 @@ type RequestMessage struct {
 
 type NotificationMessage struct {
 	BaseMessage
-	Method string          `json:"method"` // starts with "/$", server build-in methods.
-	Params json.RawMessage `json:"params"` // params, is some struct or slice
+	Method string      `json:"method"` // starts with "/$", server build-in methods.
+	Params interface{} `json:"params"` // params, is some struct or slice
 }
 
 type ResponseMessage struct {
