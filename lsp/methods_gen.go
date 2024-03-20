@@ -52,6 +52,7 @@ type Methods struct {
 	onFoldingRanges                            func(ctx context.Context, req *defines.FoldingRangeParams) (*[]defines.FoldingRange, error)
 	onSelectionRanges                          func(ctx context.Context, req *defines.SelectionRangeParams) (*[]defines.SelectionRange, error)
 	onDocumentDiagnostic                       func(ctx context.Context, req *defines.DocumentDiagnosticParams) (defines.DocumentDiagnosticReport, error)
+	onDocumentSemanticTokenFull                func(ctx context.Context, req *defines.SemanticTokensParams) (defines.SemanticTokens, error)
 }
 
 func (m *Methods) OnInitialize(f func(ctx context.Context, req *defines.InitializeParams) (result *defines.InitializeResult, err *defines.InitializeError)) {
@@ -1188,6 +1189,33 @@ func (m *Methods) documentDiagnosticMethodInfo() *jsonrpc.MethodInfo {
 	}
 }
 
+func (m *Methods) OnDocumentSemanticTokenFull(f func(ctx context.Context, req *defines.SemanticTokensParams) (result defines.SemanticTokens, err error)) {
+	m.onDocumentSemanticTokenFull = f
+}
+
+func (m *Methods) documentSemanticTokenFull(ctx context.Context, req interface{}) (interface{}, error) {
+	params := req.(*defines.SemanticTokensParams)
+	if m.onDocumentSemanticTokenFull != nil {
+		res, err := m.onDocumentSemanticTokenFull(ctx, params)
+		e := wrapErrorToRespError(err, 0)
+		return res, e
+	}
+	return nil, nil
+}
+
+func (m *Methods) documentSemanticTokenFullMethonInfo() *jsonrpc.MethodInfo {
+	if m.onDocumentSemanticTokenFull == nil {
+		return nil
+	}
+	return &jsonrpc.MethodInfo{
+		Name: "textDocument/semanticTokens/full",
+		NewRequest: func() interface{} {
+			return &defines.SemanticTokensParams{}
+		},
+		Handler: m.documentSemanticTokenFull,
+	}
+}
+
 func (m *Methods) GetMethods() []*jsonrpc.MethodInfo {
 	return []*jsonrpc.MethodInfo{
 		m.initializeMethodInfo(),
@@ -1232,5 +1260,6 @@ func (m *Methods) GetMethods() []*jsonrpc.MethodInfo {
 		m.foldingRangesMethodInfo(),
 		m.selectionRangesMethodInfo(),
 		m.documentDiagnosticMethodInfo(),
+		m.documentSemanticTokenFullMethonInfo(),
 	}
 }
