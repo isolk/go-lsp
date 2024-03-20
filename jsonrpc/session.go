@@ -52,7 +52,17 @@ func (s *Session) Start() {
 	}
 }
 
-func (s *Session) SendNotification(msg NotificationMessage) {
+func (s *Session) SendNotification(method string, params interface{}) {
+	s.sendNotificationMsg(NotificationMessage{
+		BaseMessage: BaseMessage{
+			Jsonrpc: "2.0",
+		},
+		Method: method,
+		Params: params,
+	})
+}
+
+func (s *Session) sendNotificationMsg(msg NotificationMessage) {
 	s.writeLock.Lock()
 	defer s.writeLock.Unlock()
 	res, err := jsoniter.Marshal(msg)
